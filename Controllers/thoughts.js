@@ -6,34 +6,26 @@ const thoughtController = {
     getThoughts(req, res) {
         Thought.find({})
         .select('-__v')
-        .then((users) => res.json(users))
+        .then((thoughts) => res.json(thoughts))
         .catch((err) => res.status(500).json(err));
     },
+
+    getThought(req, res) {
+        Thought.findById(req.params.id)
+            .select('__v')
+            .then((thought) =>
+                !thought
+                    ? res.status(404).json({ message: 'No thought with that ID!'})
+                    : res.json(user)
+            )
+            .catch((err) => res.status(500).json(err));
+    },
+
+    addThought(req, res) {
+        Thought.create(req.body)
+        .then((thought) => res.json(thought))
+        .catch((err) => res.status(400).json(err));
+    },
 };
-
-//     getThought(req, res) {
-
-//     },
-
-//     addThought(req, res) {
-
-//     },
-
-//     updateThought(req, res) {
-
-//     },
-
-//     deleteThought(req, res) {
-
-//     },
-
-//     addReaction(req, res) {
-
-//     },
-
-//     removeReaction(req, res) {
-
-//     }
-// };
 
 module.exports = thoughtController;
