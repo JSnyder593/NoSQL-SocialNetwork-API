@@ -23,9 +23,27 @@ const thoughtController = {
 
     addThought(req, res) {
         Thought.create(req.body)
-        .then((thought) => res.json(thought))
+        .then((thought) => {
+            return User.findOneAndUpdate(
+                { _id: req.body.userId },
+                { $addToSet: { thought } },
+                { new: true }
+            );
+        })
         .catch((err) => res.status(400).json(err));
     },
+
+    deleteThought(req, res) {
+        Thought.findOneAndDelete({ _id: req.params.thoughtId })
+            .then(dbThoughtData => {
+                if (!dbThoughtData) {
+                    res.status(404).json({ message: 'No thought with that ID!' })
+                }
+                Thought.deleteMany({ _id: { $in: dbThoughtData.thoughts } });
+                res.json(dbThoughtData)
+            })
+            .catch(err => res.status(400).json(err));
+    }
 };
 
 module.exports = thoughtController;
